@@ -18,9 +18,9 @@ const login = (req, res) => {
                 if (!response) { return res.status(404).send({ msg: "email or password is wrong" }) }
                 else {
                     // const Payload = { FirstName: user.FirstName, LastName: user.LastName, Email: user.Email, UserName: user.UserName, Role: user.Role, ID: user._id };
-                    const Payload = { UserName: user.UserName, Role: user.Role, ID: user._id,Email:user.Email,FirstName:user.FirstName,LastName:user.LastName };
+                    const Payload = { UserName: user.UserName, Role: user.Role, ID: user._id, Email: user.Email, FirstName: user.FirstName, LastName: user.LastName, TokenVersion: user.TokenVersion };
                     const accessToken = jwt.sign(Payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
-                    const refreshToken = jwt.sign({ ...Payload, TokenVersion: user.TokenVersion }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+                    const refreshToken = jwt.sign(Payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
                     res.cookie('JWT', accessToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 15 * 60 * 1000 });
                     res.cookie('RefreshToken', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
                     return res.status(201).send({ msg: 'logged in successfully', User: Payload });

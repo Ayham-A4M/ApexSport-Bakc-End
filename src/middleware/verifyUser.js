@@ -7,18 +7,21 @@ const verifyUser = (req, res, next) => {
             if (err || !decode) { throw err }
 
             if (decode.Role === "user") {
-                const ValidUser = await UserModel.findById(decode.ID);
-                if (ValidUser) {
-                    res.locals.id = decode.ID; return next();
+                const validUser = await UserModel.findById(decode.ID);
+                if (validUser) {
+                    if (validUser?.TokenVersion === decode.TokenVersion) {
+                        res.locals.id = decode.ID; return next();
+                    }
+
+                } else {
+                    return res.status(403).send({ msg: 'Request Blocked' });
                 }
 
-            } else {
-                return res.status(403).send({ msg: 'Request Blocked' });
             }
-
         } catch (err) {
             return res.status(401).send(err);
         }
+
     })
 }
 module.exports = verifyUser;
